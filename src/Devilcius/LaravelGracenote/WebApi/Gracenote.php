@@ -23,6 +23,7 @@ class Gracenote
 
         $this->clientID = Config::get('gracenote.client_id');
         $this->clientTag = Config::get('gracenote.client_tag');
+        $this->userID = Config::get('gracenote.user_id');
         // Sanity checks
         if ($this->clientID === null || $this->clientID == "") {
             throw new GNException(GNError::INVALID_INPUT_SPECIFIED, "clientID");
@@ -81,6 +82,7 @@ class Gracenote
 
         $body = $this->constructQueryBody($artistName, $albumTitle, $trackTitle, "", "ALBUM_SEARCH", $matchMode);
         $data = $this->constructQueryRequest($body);
+
         return $this->execute($data);
     }
 
@@ -130,7 +132,8 @@ class Gracenote
 
         $data = $this->constructQueryRequest($body, "ALBUM_FETCH");
         $request = new Http($this->apiUrl);
-        $response = $request->post($data);
+        $response = $request->post($data);        
+        
         $xml = $this->checkResponse($response);
 
         $output = array();
@@ -169,9 +172,10 @@ class Gracenote
         return
                 "<QUERIES>
                 <AUTH>
-                    <CLIENT>" . $this->clientID . "-" . $this->clientTag . "</CLIENT>
+                    <CLIENT>" . $this->clientID . "</CLIENT>
                     <USER>" . $this->userID . "</USER>
                 </AUTH>
+                <LANG>eng</LANG>
                 <QUERY CMD=\"" . $command . "\">
                     " . $body . "
                 </QUERY>
